@@ -1,0 +1,18 @@
+os: linux
+sudo: false
+language: go
+
+go:
+  - "1.14"
+
+
+script:
+  - go test
+
+
+branches:
+  only:
+    - test
+
+notifications:
+  email: false

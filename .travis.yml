@@ -1,0 +1,19 @@
+os: linux
+sudo: false
+language: go
+
+go:
+  - "1.14"
+
+
+script:
+  - cd chengtay/test
+  - go test merkle_test.go
+
+
+branches:
+  only:
+    - test
+
+notifications:
+  email: false

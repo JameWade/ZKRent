@@ -1,0 +1,102 @@
+name: Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - test
+
+jobs:
+  cleanup-runs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rokroskar/workflow-run-cleanup-action@master
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/setup-go@v2-beta
+      - name: Set GOBIN
+        run: |
+          echo "::add-path::$(go env GOPATH)/bin"
+      - uses: actions/checkout@v2
+      - name: install
+        run: make build
+      - name: Find build binary
+        run: ls ./build
+
+  test_merkle:
+    runs-on: ubuntu-18.04
+    needs: Build
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v1
+      - name: Set GOBIN
+        run: |
+          echo "::add-path::$(go env GOPATH)/bin"
+      - name: Set Test
+        run:
+          go test ./chengtay/test/merkle_test.go
+        shell: bash
+        if: "env.GIT_DIFF != ''"
+
+  test_clearing:
+    runs-on: ubuntu-18.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v1
+      - name: Set GOBIN
+        run: |
+          echo "::add-path::$(go env GOPATH)/bin"
+      - name: Set Test
+        run:
+          go test ./chengtay/cmd/clearing-client/commands/clearing_test.go ./chengtay/cmd/clearing-client/commands/clearing.go
+        shell: bash
+        if: "env.GIT_DIFF != ''"
+
+  test_transaction:
+    runs-on: ubuntu-18.04
+    needs: Build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set GOBIN
+        run: |
+          echo "::add-path::$(go env GOPATH)/bin"
+      - uses: actions/cache@v1
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-${{ github.sha }}-tm-binary
+        if: "env.GIT_DIFF != ''"
+      - name: Deploy and build
+        run: make build
+      - name: transaction Test
+        run: ./chengtay/test/test_transaction.sh
+        shell: bash
+  test_chengtay:
+    runs-on: ubuntu-18.04
+    needs: Build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set GOBIN
+        run: |
+          echo "::add-path::$(go env GOPATH)/bin"
+      - uses: actions/cache@v1
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-${{ github.sha }}-tm-binary
+        if: "env.GIT_DIFF != ''"
+      - name: Deploy and build
+        run: make build
+      - name: chengtay Test
+        run: ./chengtay/test/test_transaction.sh
+        shell: bash
+
+
+
+
+
