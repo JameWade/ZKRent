@@ -790,7 +790,7 @@ func (app *Application) Info(req abcitypes.RequestInfo) (resInfo abcitypes.Respo
 //}
 
 func VerifyProof(tx *types.Transaction) bool {
-	if err := zktx.VerifySendProof(tx.ZKSN(), tx.ZKCMTS(), tx.ZKProof(), &cmtbalance, tx.ZKCMT()); err != nil {
+	if err := zktx.Verifyproof(); err != nil {
 		fmt.Println("invalid zk send proof: ", err)
 		return false
 	}
