@@ -9,6 +9,8 @@ require (
 	github.com/Workiva/go-datastructures v1.0.52
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
+	github.com/consensys/gnark v0.5.2
+	github.com/consensys/gnark-crypto v0.5.3
 	github.com/cosmos/cosmos-sdk v0.39.2
 	github.com/cosmos/ethermint v0.4.1
 	github.com/ethereum/go-ethereum v1.9.25
@@ -16,7 +18,7 @@ require (
 	github.com/go-kit/kit v0.10.0
 	github.com/go-logfmt/logfmt v0.5.0
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/gtank/merlin v0.1.1
 	github.com/libp2p/go-buffer-pool v0.0.2
@@ -37,8 +39,10 @@ require (
 	github.com/tendermint/tendermint v0.33.9
 	github.com/tendermint/tm-db v0.5.1
 	github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb
-	google.golang.org/grpc v1.30.0
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c
+	golang.org/x/text v0.3.6 // indirect
+	google.golang.org/genproto v0.0.0-20210402141018-6c239bbf2bb1 // indirect
+	google.golang.org/grpc v1.36.1
 	gopkg.in/yaml.v2 v2.4.0
 )
