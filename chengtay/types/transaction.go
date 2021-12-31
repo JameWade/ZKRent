@@ -41,11 +41,12 @@ const (
 	TransactionMerkleroot             = 1
 	TransactionUpdateTrustedPublicKey = 2
 	//TransactionVehicleUploading
-	TransactionRequestVehicle         = 4
-	TransactionResponseVehicle        = 5
-	TransactionResponseTimeout        = 6
-	TransactionReturnVehicleTimeout   = 7
-	TransactionClearing               = 8
+	TransactionRequestVehicle       = 4
+	TransactionResponseVehicle      = 5
+	TransactionResponseTimeout      = 6
+	TransactionReturnVehicleTimeout = 7
+	TransactionClearing             = 8
+	TransactionProof                = 9
 )
 
 func GetTransaction(raw RawTransaction) (errorCode uint32, ret Transaction, criticalError error) {
@@ -103,7 +104,7 @@ func GetTransaction(raw RawTransaction) (errorCode uint32, ret Transaction, crit
 		ret.PublicKey = raw.PublicKey
 		ret.Value = &value
 		return ErrorNoError, ret, nil
-	}else if raw.Type == TransactionClearing {
+	} else if raw.Type == TransactionClearing {
 		var value ClearingTransactionValue
 		err := json.Unmarshal(raw.Value, &value)
 		if err != nil {
@@ -169,7 +170,7 @@ type RequestVehicleTransactionValue struct {
 	RequestTime string   //compute by day
 	//zk
 	cipherDeposit []byte
-	ZKProof   []byte      //cipherDeposit  == encrypt(Deposit)
+	ZKProof       []byte //cipherDeposit  == encrypt(Deposit)
 }
 
 func (self *RequestVehicleTransactionValue) GetType() uint32 {
@@ -276,12 +277,12 @@ func (self *ResponseVehicleTransactionValue) GetHash() (digest []byte, err error
 //ResponseTimeoutTransactionValue  type5
 //TODO uncomplete how to handle time?
 type ResponseTimeoutTransactionValue struct {
-	Timestamp    uint64
-	Nonce        [256]byte // random bytes
-	VehicleID    string
+	Timestamp uint64
+	Nonce     [256]byte // random bytes
+	VehicleID string
 	//ExceededTime uint64
 
-	PublicKey    ed25519.PubKeyEd25519 // the corresponding public key of the signature
+	PublicKey ed25519.PubKeyEd25519 // the corresponding public key of the signature
 }
 
 func (self *ResponseTimeoutTransactionValue) GetTimestamp() uint64 {
@@ -314,11 +315,11 @@ func (self *ResponseTimeoutTransactionValue) GetHash() (digest []byte, err error
 //ReturnVehicleTimeoutTransactionValue  type6 TransactionReturnVehicleTimeout
 //TODO uncomplete how to handle time?
 type ReturnVehicleTimeoutTransactionValue struct {
-	Timestamp   	 uint64
-	Nonce       	 [256]byte // random bytes
-	VehicleID   	 string
-	ExceededTime	 uint64
-	PublicKey    	ed25519.PubKeyEd25519 // the corresponding public key of the signature to verify
+	Timestamp    uint64
+	Nonce        [256]byte // random bytes
+	VehicleID    string
+	ExceededTime uint64
+	PublicKey    ed25519.PubKeyEd25519 // the corresponding public key of the signature to verify
 	//UserPublicKey   ed25519.PubKeyEd25519 //Return Timeout so add to the untrusted list
 }
 
@@ -360,8 +361,7 @@ type ClearingTransactionValue struct {
 	//PublicKey          ed25519.PubKeyEd25519 // the corresponding public key of the signature
 
 	///zk
-	ZKProof   []byte
-
+	ZKProof []byte
 }
 
 func (self *ClearingTransactionValue) GetTimestamp() uint64 {
@@ -388,4 +388,16 @@ func (self *ClearingTransactionValue) GetHash() (digest []byte, err error) {
 	source = append(source, self.VehicleID[:]...)
 
 	return DefaultHashProvider.Digest(source), nil
+}
+
+//type ZkProofTransaction struct {
+//	Proof   groth16.Proof
+//	Vk      groth16.VerifyingKey
+//	Witness zktx.PaillerCircuit
+//}
+
+//////////////
+//use xjsnark
+type ZkProofTransaction struct {
+	Proof []byte
 }

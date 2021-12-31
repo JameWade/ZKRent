@@ -11,7 +11,8 @@ const (
 	ErrorInsufficientDeposit    = 7
 	ErrorInsufficientBalance    = 8
 	ErrorVehicleInused          = 9
-	ErrorVehicleUnused          =10
-	ErrorInvalidTimeout         =11
-	ErrorClearingDays           =12
+	ErrorVehicleUnused          = 10
+	ErrorInvalidTimeout         = 11
+	ErrorClearingDays           = 12
+	ErrorProof                  = 13
 )

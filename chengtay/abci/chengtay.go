@@ -274,7 +274,7 @@ func (app *Application) parseAndDeliverRequestVehicleTransaction(content []byte)
 	vehicleId := RequestVehicleTransactionValue.VehicleID
 	//if VehicleInused
 	ifusedpublickey := app.temporaryState.state.VehicleUser[vehicleId]
-	if  ifusedpublickey != ""{
+	if ifusedpublickey != "" {
 		fmt.Println("**************************")
 		fmt.Println("the vehicle Is being used ")
 		fmt.Println("**************************")
@@ -287,20 +287,20 @@ func (app *Application) parseAndDeliverRequestVehicleTransaction(content []byte)
 	//	return types.ErrorVehicleInused, rawTransaction, nil
 	//}
 	fmt.Println(app.state.LockSig[vehicleId])
-	if app.temporaryState.state.LockSig[vehicleId] != nil{
-			{
-				fmt.Println("**************************")
-				fmt.Println("vehicle inused")
-				fmt.Println("**************************")
-			}
-			return types.ErrorVehicleInused, rawTransaction, nil
+	if app.temporaryState.state.LockSig[vehicleId] != nil {
+		{
+			fmt.Println("**************************")
+			fmt.Println("vehicle inused")
+			fmt.Println("**************************")
+		}
+		return types.ErrorVehicleInused, rawTransaction, nil
 	}
 
 	//deal with the deposit,fixed deposit
 	var monthRent *big.Int
-	if app.temporaryState.state.UntrustedUser[vehicleRequestPublicKey] >  0{
+	if app.temporaryState.state.UntrustedUser[vehicleRequestPublicKey] > 0 {
 		monthRent, _ = new(big.Int).SetString("200", 10)
-	}else {
+	} else {
 		monthRent, _ = new(big.Int).SetString("100", 10)
 	}
 	//fmt.Println(monthRent)
@@ -351,14 +351,14 @@ func (app *Application) parseAndDeliverResponseVehicleTransaction(content []byte
 	publicKey := ResponseVehicleTransactionValue.PublicKey
 
 	ifusedpublickey := app.temporaryState.state.VehicleUser[vehicleId]
-	if  ifusedpublickey == ""{
+	if ifusedpublickey == "" {
 		fmt.Println("****************************************")
 		fmt.Println("the vehicle Is not being requested ")
 		fmt.Println("****************************************")
 		return types.ErrorVehicleInused, rawTransaction, nil
 	}
 
-	if app.state.LockSig[vehicleId] != nil{
+	if app.state.LockSig[vehicleId] != nil {
 		fmt.Println("the vehicle Is  being used ")
 		return types.ErrorVehicleInused, rawTransaction, nil
 	}
@@ -395,7 +395,7 @@ func (app *Application) parseAndDeliverResponseTimeoutTransaction(content []byte
 		return types.ErrorInvalidTimeout, rawTransaction, nil
 	}
 	ifusedpublickey := app.temporaryState.state.VehicleUser[vehicleId]
-	if  ifusedpublickey != ""{
+	if ifusedpublickey != "" {
 		fmt.Println("**************************")
 		fmt.Println("the vehicle Is being used ")
 		fmt.Println("**************************")
@@ -426,7 +426,7 @@ func (app *Application) parseAndDeliverReturnVehicleTimeoutTransaction(content [
 	}
 	vehicleId := ReturnVehicleTimeoutTransactionValue.VehicleID
 	ifusedpublickey := app.temporaryState.state.VehicleUser[vehicleId]
-	if  ifusedpublickey == ""{
+	if ifusedpublickey == "" {
 		fmt.Println(vehicleId)
 		fmt.Println("**********************************")
 		fmt.Println("the vehicle was returned or unused")
@@ -451,9 +451,9 @@ func (app *Application) parseAndDeliverReturnVehicleTimeoutTransaction(content [
 	//todo : can not just use days,
 	if useDays > 31 {
 		UntrusedUserPublicKey := app.temporaryState.state.VehicleUser[vehicleId]
-		app.temporaryState.state.UntrustedUser[UntrusedUserPublicKey] = app.temporaryState.state.UntrustedUser[UntrusedUserPublicKey] + 1   //count++
+		app.temporaryState.state.UntrustedUser[UntrusedUserPublicKey] = app.temporaryState.state.UntrustedUser[UntrusedUserPublicKey] + 1 //count++
 		//then
-	}else {
+	} else {
 		fmt.Println("**********************************")
 		fmt.Println("used days < 31 days")
 		fmt.Println("**********************************")
@@ -475,7 +475,7 @@ func (app *Application) parseAndDeliverClearingTransaction(content []byte) (erro
 	vehicleId := clearingTransactionValue.VehicleID
 	vehicleRequestPublicKey := app.temporaryState.state.VehicleUser[vehicleId]
 	vehicleOwnerPublicKey := app.temporaryState.state.VehicleOwner[vehicleId]
-	if  vehicleRequestPublicKey == ""{
+	if vehicleRequestPublicKey == "" {
 		fmt.Println("**********************************************")
 		fmt.Println(vehicleId)
 		fmt.Println("Request is null ,the vehicle was not inused")
@@ -499,7 +499,7 @@ func (app *Application) parseAndDeliverClearingTransaction(content []byte) (erro
 		fmt.Println("**************************")
 		fmt.Println("ErrorClearingDays")
 		fmt.Println("**************************")
-		return types.ErrorClearingDays,rawTransaction,nil
+		return types.ErrorClearingDays, rawTransaction, nil
 	}
 
 	//compute   lockRent
@@ -520,14 +520,13 @@ func (app *Application) parseAndDeliverClearingTransaction(content []byte) (erro
 	app.temporaryState.state.RentAccount[vehicleOwnerPublicKey] = app.temporaryState.state.RentAccount[vehicleOwnerPublicKey].Add(chengtayPercentage, app.temporaryState.state.RentAccount[vehicleOwnerPublicKey])
 	app.temporaryState.state.LockRent[vehicleId].Sub(app.temporaryState.state.LockRent[vehicleId], monthRent)
 	//app.temporaryState.state.LockRent[vehicleId],_ = new(big.Int).SetString("0", 10)
-	app.temporaryState.state.VehicleUser[vehicleId] = ""    //the vehicle is unused
+	app.temporaryState.state.VehicleUser[vehicleId] = "" //the vehicle is unused
 	app.temporaryState.state.LockSig[vehicleId] = nil
 	//delete(app.state.LockSig, vehicleId)
 	fmt.Println("********************************")
 	fmt.Println("the Vehicle has been returned")
 	fmt.Println("********************************")
 	fmt.Println(app.temporaryState.state.RentAccount[ChengtayPublicKey])
-
 
 	return types.ErrorNoError, rawTransaction, nil
 }
@@ -581,6 +580,11 @@ func (app *Application) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Resp
 		}
 	} else if rawTransaction.Type == types.TransactionClearing {
 		errorCode, _, err = app.parseAndDeliverClearingTransaction(req.Tx)
+		if err != nil {
+			panic(err)
+		}
+	} else if rawTransaction.Type == types.TransactionProof {
+		errorCode, _, err = app.parseAndDelivergroth16ProofTransaction(req.Tx)
 		if err != nil {
 			panic(err)
 		}
@@ -788,11 +792,44 @@ func (app *Application) Info(req abcitypes.RequestInfo) (resInfo abcitypes.Respo
 //	resQuery.Height = app.state.LastBlockHeight
 //	return resQuery
 //}
+//
 
-func VerifyProof(tx *types.Transaction) bool {
-	if err := zktx.Verifyproof(); err != nil {
-		fmt.Println("invalid zk send proof: ", err)
-		return false
+//func (app *Application) parseAndDeliverProofTransaction(content []byte) (errorCode uint32, rawTransaction types.RawTransaction, criticalError error) {
+//	err := json.Unmarshal(content, &rawTransaction)
+//	if err != nil {
+//		return types.ErrorJsonParsing, types.RawTransaction{}, nil
+//	}
+//	ProofTransactionValue := types.ZkProofTransaction{}
+//	err = json.Unmarshal(rawTransaction.Value, &ProofTransactionValue)
+//	if err != nil {
+//		return types.ErrorJsonParsing, types.RawTransaction{}, nil
+//	}
+//
+//	var proof, vk, witness = ProofTransactionValue.Proof, ProofTransactionValue.Vk, ProofTransactionValue.Witness
+//
+//	err = groth16.Verify(proof, vk, &witness)
+//
+//	if err != nil {
+//		return types.ErrorProof, rawTransaction, nil
+//	}
+//	return types.ErrorNoError, rawTransaction, nil
+//}
+
+func (app *Application) parseAndDelivergroth16ProofTransaction(content []byte) (errorCode uint32, rawTransaction types.RawTransaction, criticalError error) {
+	err := json.Unmarshal(content, &rawTransaction)
+	if err != nil {
+		return types.ErrorJsonParsing, types.RawTransaction{}, nil
 	}
-	return true
+	ProofTransactionValue := types.ZkProofTransaction{}
+	err = json.Unmarshal(rawTransaction.Value, &ProofTransactionValue)
+	if err != nil {
+		return types.ErrorJsonParsing, types.RawTransaction{}, nil
+	}
+	proof := ProofTransactionValue.Proof
+	if zktx.VerifyProof(proof) == true {
+		fmt.Println("verify pass")
+		return types.ErrorNoError, rawTransaction, nil
+	}
+	fmt.Println("verify fail")
+	return types.ErrorNoError, rawTransaction, nil
 }

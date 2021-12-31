@@ -2,7 +2,11 @@ module github.com/ChengtayChain/ChengtayChain
 
 go 1.14
 
-replace github.com/ChengtayChain/ChengtayChain => ./
+replace (
+	github.com/ChengtayChain/ChengtayChain => ./
+	//github.com/consensys/gnark v0.5.2 => github.com/JameWade/gnark v0.5.3-0.20211225131726-b1850c32eede
+	github.com/consensys/gnark v0.5.2 => /home/waris/gnark
+)
 
 require (
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
