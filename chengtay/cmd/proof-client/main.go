@@ -44,7 +44,7 @@ func main() {
 			fmt.Printf("%+v\n", ret)
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(15 * time.Second)
 	}
 
 }
@@ -71,9 +71,11 @@ func randomRawTransaction(privKey ed25519.PrivKeyEd25519) (rawTransaction types.
 	}
 	var proof = content
 	value := types.ZkProofTransaction{
-		Proof: proof,
+		Timestamp: uint64(time.Now().Unix()),
+		Proof:     proof,
 	}
-
+	bytes256 := rand.Bytes(256)
+	copy(value.Nonce[:256], bytes256[:256])
 	////////////////feihua
 	valueBytes, err := json.Marshal(value)
 	if err != nil {

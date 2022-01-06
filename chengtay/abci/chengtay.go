@@ -229,6 +229,7 @@ func (app *Application) parseAndCheckTransaction(content []byte) (errorCode uint
 		return types.ErrorSignatureInvalid, types.RawTransaction{}, nil
 	}
 	// all set
+	fmt.Println("check Signature pass ")
 	return types.ErrorNoError, rawTransaction, nil
 }
 
@@ -585,6 +586,7 @@ func (app *Application) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Resp
 		}
 	} else if rawTransaction.Type == types.TransactionProof {
 		errorCode, _, err = app.parseAndDelivergroth16ProofTransaction(req.Tx)
+		fmt.Println("asdhjfhalshf", errorCode)
 		if err != nil {
 			panic(err)
 		}
@@ -605,7 +607,7 @@ func (app *Application) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Resp
 	var transactionHash string
 	switch transaction.Type {
 	case types.TransactionMerkleroot, types.TransactionRequestVehicle, types.TransactionResponseVehicle,
-		types.TransactionResponseTimeout, types.TransactionReturnVehicleTimeout, types.TransactionClearing:
+		types.TransactionResponseTimeout, types.TransactionReturnVehicleTimeout, types.TransactionClearing, types.TransactionProof:
 		hash, err := transaction.Value.GetHash()
 		if err != nil {
 			panic(err)
@@ -794,27 +796,6 @@ func (app *Application) Info(req abcitypes.RequestInfo) (resInfo abcitypes.Respo
 //}
 //
 
-//func (app *Application) parseAndDeliverProofTransaction(content []byte) (errorCode uint32, rawTransaction types.RawTransaction, criticalError error) {
-//	err := json.Unmarshal(content, &rawTransaction)
-//	if err != nil {
-//		return types.ErrorJsonParsing, types.RawTransaction{}, nil
-//	}
-//	ProofTransactionValue := types.ZkProofTransaction{}
-//	err = json.Unmarshal(rawTransaction.Value, &ProofTransactionValue)
-//	if err != nil {
-//		return types.ErrorJsonParsing, types.RawTransaction{}, nil
-//	}
-//
-//	var proof, vk, witness = ProofTransactionValue.Proof, ProofTransactionValue.Vk, ProofTransactionValue.Witness
-//
-//	err = groth16.Verify(proof, vk, &witness)
-//
-//	if err != nil {
-//		return types.ErrorProof, rawTransaction, nil
-//	}
-//	return types.ErrorNoError, rawTransaction, nil
-//}
-
 func (app *Application) parseAndDelivergroth16ProofTransaction(content []byte) (errorCode uint32, rawTransaction types.RawTransaction, criticalError error) {
 	err := json.Unmarshal(content, &rawTransaction)
 	if err != nil {
@@ -831,5 +812,5 @@ func (app *Application) parseAndDelivergroth16ProofTransaction(content []byte) (
 		return types.ErrorNoError, rawTransaction, nil
 	}
 	fmt.Println("verify fail")
-	return types.ErrorNoError, rawTransaction, nil
+	return types.ErrorProof, rawTransaction, nil
 }

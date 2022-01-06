@@ -7,7 +7,7 @@ const (
 	ErrorPublicKeyUntrusted     = 3
 	ErrorSignatureInvalid       = 4
 	ErrorNotImplemented         = 5
-	ErrorUnknownTransactionType = 6
+	ErrorUnknownTransactionType = 100
 	ErrorInsufficientDeposit    = 7
 	ErrorInsufficientBalance    = 8
 	ErrorVehicleInused          = 9

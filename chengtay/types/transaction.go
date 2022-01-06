@@ -114,6 +114,16 @@ func GetTransaction(raw RawTransaction) (errorCode uint32, ret Transaction, crit
 		ret.PublicKey = raw.PublicKey
 		ret.Value = &value
 		return ErrorNoError, ret, nil
+	} else if raw.Type == TransactionProof {
+		var value ZkProofTransaction
+		err := json.Unmarshal(raw.Value, &value)
+		if err != nil {
+			return ErrorJsonParsing, Transaction{}, nil
+		}
+		ret.Type = raw.Type
+		ret.PublicKey = raw.PublicKey
+		ret.Value = &value
+		return ErrorNoError, ret, nil
 	} else {
 		return ErrorUnknownTransactionType, Transaction{}, nil
 	}
@@ -399,5 +409,33 @@ func (self *ClearingTransactionValue) GetHash() (digest []byte, err error) {
 //////////////
 //use xjsnark
 type ZkProofTransaction struct {
-	Proof []byte
+	Timestamp uint64
+	Nonce     [256]byte // random bytes
+	Proof     []byte
+}
+
+func (self *ZkProofTransaction) GetType() uint32 {
+	return TransactionProof
+}
+
+func (self *ZkProofTransaction) GetTimestamp() uint64 {
+	return self.Timestamp
+}
+
+func (self *ZkProofTransaction) GetHash() (digest []byte, err error) {
+	source := make([]byte, 0)
+
+	// 1. Nonce
+	source = append(source, self.Nonce[:]...)
+
+	// 2. Timestamp (uint64) in BigEndian
+	{
+		ret, err := util.UInt64ToBytes(self.Timestamp)
+		if err != nil {
+			return nil, err
+		}
+		source = append(source, ret...)
+	}
+
+	return DefaultHashProvider.Digest(source), nil
 }

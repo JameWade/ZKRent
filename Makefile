@@ -6,7 +6,7 @@ LD_FLAGS = -X github.com/ChengtayChain/ChengtayChain/version.GitCommit=`git rev-
 BUILD_FLAGS = -mod=readonly -ldflags "$(LD_FLAGS)"
 HTTPS_GIT := https://github.com/ChengtayChain/ChengtayChain.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
-CGO_ENABLED ?= 0
+CGO_ENABLED ?= 1
 
 # handle nostrip
 ifeq (,$(findstring nostrip,$(TENDERMINT_BUILD_OPTIONS)))
